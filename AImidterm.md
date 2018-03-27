@@ -420,9 +420,249 @@ We are told that the "husband of the chef is the clerk". Once again it would be 
 * Greedy Algorithm - a useful approach to solving some problems
 * All blind search algorithms exhibit exponential time - complexity
 
+# Chapter 3 - Informed Search
 
+## Informed Search
+* ### Heuristic Features
+* Underestimate of remaining distance
+* admissibility
+* Heurisitic estimate of remaining distance must continually decrease
+* Able to avoid unnecessary searches (informed)
+* Keeping track of distance travelled this far (branch and bound)
 
+## Heuristics
+* Heuristics are used for problems whose combinatorial complexity grows very quickly
+* Practical strategy for increasing the effectiveness pf problem solving
+* Uses most probable paths
+* Heuristics rules are used in order to:
+	* Decide what nodes to explore next
+	* Decide what node to generate next
+	* Decide what nodes should be discarded
 
+## Hill Climbing
+* Hill climbing is a greedy algorithm
+* It chooses the node with the lowest heuristic measure of estimated remaining distance to goal
+* Keeps no record of paths not chosen
+
+We've seen  several examples of Heurisitics: <br>
+i. To solve a difficult problem (finding the diagonal of a rectangular solid) first solve a simpler but related problem <br>
+ii. To find a solution to a problem, try working backwards, i.e Ask what is the state immediately preceding the goal state (and so on, back to the start state) -- water jug problem <br>
+iii. Employ an estimate of remaining distance to guide our search. Recall the 3-puzzle where we considered: <br> 
+(1) number of tiles out of place (2) the sum of the Manhattan distances that each tile must travel
+
+# Hillclimbing
+We envision a mountain climber who wishes to reach the top of a peak. Imagine there is a dense fog but the climber possesses an altimeter. The steppest trailer will always be chosen. However, it is not possible to return to previous altitudes when stuck. The climber continues as long as ascent is possible. Getting stuck on a local maximum(peak) is possible.
+<img src='./images/hillclimbing.png'>
+<img src='./images/hillclimbing2.png'>
+<img src='./images/hillclimbing3.png'>
+
+### Problems in Hill Climbing
+* The Plateau problem
+* The Foothills problem
+* The Ridge problem
+
+### Possible Remedies
+* Backtracking
+* Returning to a node almost taken
+* Applying same rule several times
+* Applying several rules at once
+
+### Best First Search
+* Uses lists to maintain states:
+	* open - to keep track of the current fringe of the search
+	* closed - to record states already visited
+
+* states are ordered on open according to a heuristic estimate of their closeness to the goal. Each iteration of the loop considers the most "promising" state on the open list
+* The goal of best first search is to find the goal but to do so by looking at as few states as possible
+
+* The **more informed** the heuristic, the fewer states are processed in finding the goal
+* Best first search maintains a **priority queue** for the selection of "next" states.
+
+* **Priority queue**: A data structure capable of supporting the operations
+	* Inserting an element
+	* Deleting the maximum or minimum element
+<img src='./images/bestfs.png'>
+
+# Beam Search
+<img src='./images/beamsearch.png'>
+<img src='./images/beamsearch2.png'>
+* This search only expands the best *w* nodes (where w is specified)
+* Using larger beams will tend to get you shorter paths
+* This is an attempt to alleviate the memory costs incurred with bfs
+* Suppose we want to calculate the path from S to G through node (n). We denote this as f(n)
+* There are two components
+	* g(n) - the distance from S to node n
+	* h*(n)* - the distance from node n to G
+	* Actually h*(n)* has not yet been discovered, so we use h(n) which is an estimate of this path length
+	* h(n) - the estimate - must always be less than or equal to the cost of the actual path taken: h(n) less than or equal to h*(n)*
+	* When this is so, it is called an **admissible** heurisitic.
+	* So our function is this: f(n) = g(n) + h(n)
+* A search algorithm is **admissible** if it always results in an optimal solution when one actually exists
+* A search algorithm is **monotonic** if it always results in an optimal solution when one actually exists
+* Backward looking algorithms
+* To this point, algorithms focused mainly on estimating distance to the goal from the origin. In contrast backward looking algorithms begin at the goal, and work backwards towards the start state.
+* Branch and Bound (also known as Uniform Cost Search)
+* Estimamted cost of a search is f(n) = g(n). That is, we take into account only the part of the path which has been traversed.
+
+## Branch and Bound
+<img src='./images/branchbound.png'> 
+Our search tree without heuristic estimates. <br>
+We start with **root** node A and the Paths from root are generated (0-length path)
+<img src='./images/branchbound2.png'> <img src='./images/branchbound3.png'>
+<img src='./images/branchbound4.png'> <img src='./images/branchbound5.png'> 
+<img src='./images/branchbound6.png'> <img src='./images/branchbound7.png'>
+
+# Branch and Bound with Underestimates
+<img src='./images/bb.png'> <img src='./images/bb2.png'>
+<img src='./images/bb3.png'> <img src='./images/bb4.png'>
+<img src='./images/bb5.png'> <img src='./images/bb6.png'>
+<img src='./images/bb7.png'> <img src='./images/bb8.png'>
+<br>
+# Branch and Bound with Estimates
+<img src='./images/bbe.png'> <img src='./images/bbe2.png'>
+* To conduct a branch-and-bound search with a lower-bound estimate
+* Form a one-element queue consisting of a zero-length path that contains only the root node
+* Until the first path in the queue terminates at the goal node or the queue is empty
+	* Remove the first path from the queue; create new paths by extending the first path to all the neighbors of the terminal node
+	* reject all new paths with loops
+	* Add the remaining new paths, if any, to the queue
+	* Sort the entire queue by *the sum of the path length and a lower-bound estimate of the cost remaining, with least-cost paths in front*
+* If the goal node is found, announce success; otherwise announce failure
+<img src='./images/bbu.png'> 
+
+# Branch and Bound with Dynamic Programming
+* A basic search problem. A path is to be found from the start node, S, to the goal node, G. Search procedures explore nets such as these, learning about connections and distance as they go
+<img src='./images/bbdp.png'>
+
+* An illustration of the dynamic-programming principle. **The numbers besides the nodes are accumulated distance**. There is no point in expanding the instance of node D at the end of S-A-D, because getting to the goal via the instance of D at the end of S-D is obviously more efficient.
+* Assume cost 1 > cost 2
+	* Why would one wish to get to the goal by first taking a more expensive path to I?
+<img src='./images/bbdp.png' style="width:375px; height:250px"> <img src='./images/bbdp2.png' style="width:250px">
+
+* The **Principle of Optimality**-optimal paths are constructed from optimal subpaths. That is an optimal subpath from S to G that passes through some intermediate node I is composed of an optimal S --> I path, followed by an optimal I --> G path.
+* To conduct a branch-and-bound search with dynamic programming
+* Form a one-element queue consisting of a zero-length path that contains only the root node
+* Until the first path in the queue terminates at the goal node or the queue is empty,
+	* Remove the first path from the queue; create new paths by extending the first path to all the neighbors of the terminal node
+	* Reject all new paths with loops
+	* Add the remaining new paths, if any, to the queue
+	* *If two or more paths reach a common node, delete all those path except the one that reaches the common node with the minimum cost.*
+	* Sort the entire queue by path length with least-cost paths in front
+* If the goal node is found, announce success; otherwise announce failure
+<img src='./images/bbdp3.png'>
+* Branch-and-bound search, augmented by dynamic programming, determines that path S-D-E-F-G is optimal. The numbers beside the nodes are accumulated path distances. Many paths, those shown terminated with underbars, are found to be redundant. Thus, dynamic programming reduces the number of nodes expanded.
+<img src='./images/bbdp4.png'>
+## A* seach
+
+* Branch and Bound
+	* with Estimate of remaining distance
+	* Dynamic Programming principle employed
+* A* Search*
+* Form a one element queue consisting of a zero-length path that contains only the root node
+* Until the first path in the queue terminates at the goal node or the queue is empty,
+	* Remove the first path from the queue; create new paths by extending the first path to all the beighbors of the terminal node
+	* Reject all new paths with loops
+	* If two or more paths reach a common node, delete all those paths excepts the one that reaches the common node with the minimum cost
+	* Sort the entire queue by the sum of the path length and a lower-bound estimate of the cost remaining, with least-cost paths in front
+* If the goal node is found, announce success; otherwise annunce failure
+
+### Branch and Bound(uniform cost) Search
+* **Complete:** If one guarantees that the cost of every step is some small positive constant
+* **Optimal:** With above caveat
+* **Time and Space Complexity:** Recall *b* is branching factor and *d* is the depth of the shallowest goal node. Can be much greater than b^d ... this is because this search may explore large trees of small steps before exploring paths involving large and perhaps fruitful steps.
+* A* Search* is optimal whenever the estimate of remaining distance employed, **h(n)**
+<img src='./images/a*.png'>
+<img src='./images/asearch.png'>
+## And - Or Trees
+* A node is solvable if:
+	<ol>
+	1. it is terminal node (a primitive problem <br>
+	2. it is a nonterminal node whose successors are AND nodes that are all solvable <br>
+	3. or it is a nonterminal node whose successors are OR nodes and at least of them is solvable
+	</ol>
+* Similarly, a node is unsolvable if:
+1. it is a nonterminal node that has no successors (a nonprimitive problem to which no operator applies)
+2. it is a nonterminal node whose successors are AND nodes and at least one of them is unsolvable
+3. it is a nonterminal node whose successors are OR nodes and all of them are unsolvable
+<img src='./images/tree.png'>
+# Summary
+* If you are looking for an optimal solution, then consider alternatives from among the Branch and Bound family of algorithms which includes A* *Search 
+* AND/OR Trees help to guide searches
+* The Bidirectional Search is a novel approach to the problem of search
+
+# Chapter Four
+
+## Trees and Adversarial Search
+* Game playing = one has two (or more) opponents
+* A **node** may be used to represent a **board situation**
+* A **game tree** represents various game board situations
+<img src='./images/gametree.png'>
+* Opponents in a two person game are often referred to as **Max** and **Min**; players alternate moves. Traditionally **Max moves first**
+## Minimax Evaluation of Game Trees
+* Situation analyzer - converts all judgements about board situations into a single number
+* Static evaluation - the process of computing a number that reflects board quality
+* Max looks for a move that leads to a large positive number. Min tres to force the play towards situations with strongly negative static evaluations
+* Hence, a move that is good for Max is bad for Min
+<img src='./images/minimax.png'>
+<img src='./images/minimax2.png'>
+* Max and Min have each had the opportunity to make a move
+* Now max would like to get to the situation yielding a static score of 13
+<img src='./images/minimax3.png'>
+* Max's decision must be to take into account the choices available to Min at the next level down
+* Similarly, Min must be aware of the choices available to Max, to the next level down
+<img src='./images/minimax4.png'>
+* Eventually, the limit of exploration is reached and the static evaluator provides a direct basis for selecting among alternatives.
+## Minimax Algorithm Example
+Player one(Max) wants to decide what move to make in some game. Minimax evaluation is employed to help max choose the best move
+<img src='./images/minimax5.png'>
+* Evaluation begins near the bottom of the tree
+* Note that Nodes E through K are Max nodes!
+* Hence in each case the **maximum value** of its children is obtained
+<img src='./images/minimax6.png'>
+******
+* Nodes B,C,D are Min nodes!
+* Now in each case the **minimum** value of its children is obtained
+<img src='./images/minimax7.png'>
+******
+* Finally, A is a max node and takes on the value 8
+* Thus, Max should move to node D
+<img src='./images/minimax8.png'>
+
+## More Challenging Games
+For more interesting games such as chess, **game trees** tend to be **huge!** It is not feasible to generate the entire tree
+* **Depth First Search should be used.** Sometimes, we limit the level to which DFS is carried out
+* When lowest tree levels are not leaves - one must employ an evaluation function **E** that assigns each possible game position, **P**, the value **E(P)** of the position to the first player
+<img src='./images/ttt.png'>
+<img src='./images/ttt2.png'>
+
+## Alpha-Beta Pruning
+* Evaluating a game tree takes a lot of time. Alpha-Beta pruning allows one to bypass many vertices in a game tree, yet still find the value of a vertex
+* The valye obtained is the same as if all the vertices had been evaluated
+* The procedure is similar to Branch and Bound in the some paths are shown to be bad even though not fully explored
+<img src='./images/alphabeta.png'>
+<img src='./images/alphabeta2.png'>
+<img src='./images/alphabeta3.png'>
+<img src='./images/alphabeta4.png'>
+<img src='./images/alphabeta5.png'>
+
+## Prisoner's Dilemma and Payoff Matrix
+* In a two-player, zero-sum game such a tic-tac-toe
+* A player can have perfect information & make perfect decisions -- knowing what is the best move in the game
+* However, in game of chance, one cannot have perfect information or make perfect decisions
+* Prisoner's Dilemma illustrates game theory in which the two players(that is, the prisoners) can either cooperate with or betray (defect from) each other.
+* This dilemma can also be modeled by the **payoff matrix** which specifies the return to each player for every combination of actions by the two participants in this game
+<img src='./images/pd.png'>
+* Suppose player A chooses to defect. However, the B player decides to remain loyal and chooses the cooperate strategy. In this case, A's decision results in no prison time as opposed to a one-year term had he chosen instead to also cooperate
+* The strategies {Betray, Betray} on the part of the two participants is reffered to as a **Nash equilibrium**
+* The strategy {Cooperate, Cooperate} yields the best possible outcome in terms of total payoff to the two players. This optimal strategy is reffered to as a **Pareto Optimal**
+* It should be noted that the Prisoner's Dilemma is **not a zero-sum game**
+## Summary
+* This Chapter introduces the concept of two-person games, games in which an adversary is present
+* Minimax evaluation was presented as an algorithm to evaluate the goodness of a move by considering how an opponent might counter it
+* Alpha-Beta pruning yields the same value as minimax but on the average requires only hald of the search effort
+* The prisoner's dilemma is shown to be a model for many real-world solutions. It is a non-zero-sum game.
+* A payoff matrix is used to evaluate games which fall into this rubric
+* The concepts of Nash Equilibruim and Pareto-Optimal are used to analyze this special class of games.
 
 
 
